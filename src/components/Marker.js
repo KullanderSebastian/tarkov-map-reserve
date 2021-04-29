@@ -1,20 +1,24 @@
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSkull } from '@fortawesome/free-solid-svg-icons'
+import { faSkull, faSkullCrossbones } from '@fortawesome/free-solid-svg-icons'
 
 class Marker extends React.Component {
     constructor() {
         super()
         this.state = {
-            display: ""
+            display: "",
+            color: "rgba(207, 0, 15, 1)"
         }
     }
 
     componentDidMount() {
-        setTimeout(() => {
-            this.setState({display: "none"})
-            console.log(this.state.display);
-        }, 10000)
+        if (this.props.markerType == "enemy") {
+            setTimeout(() => {
+                this.setState({display: "none"})
+            }, 10000)
+        } else if (this.props.markerType == "body") {
+            this.setState({color: "rgba(255,215,0, 1)"})
+        }
     }
 
     render() {
@@ -23,15 +27,25 @@ class Marker extends React.Component {
         const left = imageObject.clientWidth * this.props.calcX;
 
         const mystyle = {
-          color: "#8b0000",
+          color: this.state.color,
           top: (top - 8) + "px",
           left: (left - 8) +"px",
           position: "absolute",
           display: this.state.display
         };
 
+        let icon;
+
+        if (this.props.markerType == "enemy") {
+            icon = <FontAwesomeIcon id="markerEnemy" style={mystyle} icon={faSkull} />
+        } else if (this.props.markerType == "body") {
+            icon = <FontAwesomeIcon id="markerBody" style={mystyle} icon={faSkullCrossbones} />
+        }
+
         return (
-            <FontAwesomeIcon id="marker" style={mystyle} icon={faSkull} />
+            <div>
+                {icon}
+            </div>
         )
     }
 }

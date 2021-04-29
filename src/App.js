@@ -3,15 +3,18 @@ import socketIOClient from "socket.io-client";
 import "./styles.css";
 import map from "./img/reservemap.jpeg"
 import Marker from "./components/Marker"
+import MarkerMenu from "./components/MarkerMenu"
 
 class App extends React.Component {
     constructor() {
         super()
         this.state = {
+            markerType: "enemy",
             markerData: []
         }
 
         this.handleClick = this.handleClick.bind(this);
+        this.markerHandler = this.markerHandler.bind(this);
     }
 
     componentDidMount() {
@@ -19,6 +22,7 @@ class App extends React.Component {
         socket.on("marker", (arg) => {
             this.setState(prevState => ({
                 markerData: [...prevState.markerData, {
+                    markerType: this.state.markerType,
                     id: prevState.markerData.length + 1,
                     calcY: arg[0],
                     calcX: arg[1]
@@ -39,15 +43,23 @@ class App extends React.Component {
         ]);
     }
 
+    markerHandler(event) {
+        if (event.target.name == "enemy") {
+            this.setState({markerType: "enemy"});
+        } else if (event.target.name == "body") {
+            this.setState({markerType: "body"});
+        }
+    }
+
     render() {
         const markerComponents = this.state.markerData.map((item) => {
-            console.log(item.id);
-            return <Marker key={item.id} calcY={item.calcY} calcX={item.calcX} />
+            return <Marker key={item.id} markerType={item.markerType} calcY={item.calcY} calcX={item.calcX} />
         })
 
         return(
             <div>
                 <img onClick={this.handleClick} alt="map over reserve" src={map} />
+                <MarkerMenu handler={this.markerHandler} />
                 {markerComponents}
             </div>
         )
